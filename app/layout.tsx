@@ -4,7 +4,6 @@ import './globals.css'
 export const metadata: Metadata = {
   title: 'v0 App',
   description: 'Created with v0',
-  keywords: 'v0, app, nextjs',
   generator: 'v0.dev',
 }
 
