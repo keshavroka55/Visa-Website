@@ -3,7 +3,7 @@ import './globals.css'
 
 export const metadata: Metadata = {
   title: 'best demand',
-  description: 'Created with v0',
+  description: 'Created by keshav, rojan and sweeker',
   generator: 'v0.dev',
 }
 
