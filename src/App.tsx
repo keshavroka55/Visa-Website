@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { useState, useEffect } from "react"
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom"
 import { AnimatePresence } from "framer-motion"
@@ -12,13 +14,21 @@ import Clients from "./pages/Clients"
 import JobApply from "./pages/JobApply"
 import Contact from "./pages/Contact"
 
+// Admin Pages
+import AdminDashboard from "./pages/admin/AdminDashboard"
+import AdminLogin from "./pages/admin/AdminLogin"
+
 // Components
+import ProtectedRoute from "./components/ProtectedRoute"
 import Navbar from "./components/Navbar"
 import Footer from "./components/Footer"
 import Chatbot from "./components/Chatbot"
 
+
 // Context
+import { AuthProvider } from "./context/AuthContext"
 import { LanguageProvider } from "./context/LanguageContext"
+
 
 // ScrollToTop component to ensure pages start from top
 const ScrollToTop = () => {
@@ -31,32 +41,93 @@ const ScrollToTop = () => {
   return null
 }
 
-const App = () => {
+// Layout wrapper for public pages
+const PublicLayout = ({ children }: { children: React.ReactNode }) => {
   const [isChatbotOpen, setIsChatbotOpen] = useState(false)
 
   return (
-    <LanguageProvider>
-      <Router>
-        <ScrollToTop />
-        <div className="flex flex-col min-h-screen">
-          <Navbar />
-          <main className="flex-grow">
-            <AnimatePresence mode="wait">
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/services" element={<Services />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/clients" element={<Clients />} />
-                <Route path="/job-apply" element={<JobApply />} />
-                <Route path="/contact" element={<Contact />} />
-              </Routes>
-            </AnimatePresence>
-          </main>
-          <Footer />
-          <Chatbot isOpen={isChatbotOpen} setIsOpen={setIsChatbotOpen} />
-        </div>
-      </Router>
-    </LanguageProvider>
+    <div className="flex flex-col min-h-screen">
+      <Navbar />
+      <main className="flex-grow">{children}</main>
+      <Footer />
+      <Chatbot isOpen={isChatbotOpen} setIsOpen={setIsChatbotOpen} />
+    </div>
+  )
+}
+
+const App = () => {
+  return (
+    <AuthProvider>
+      <LanguageProvider>
+        <Router>
+          <ScrollToTop />
+          <AnimatePresence mode="wait">
+            <Routes>
+              {/* Public Routes */}
+              <Route
+                path="/"
+                element={
+                  <PublicLayout>
+                    <Home />
+                  </PublicLayout>
+                }
+              />
+              <Route
+                path="/services"
+                element={
+                  <PublicLayout>
+                    <Services />
+                  </PublicLayout>
+                }
+              />
+              <Route
+                path="/about"
+                element={
+                  <PublicLayout>
+                    <About />
+                  </PublicLayout>
+                }
+              />
+              <Route
+                path="/clients"
+                element={
+                  <PublicLayout>
+                    <Clients />
+                  </PublicLayout>
+                }
+              />
+              <Route
+                path="/job-apply"
+                element={
+                  <PublicLayout>
+                    <JobApply />
+                  </PublicLayout>
+                }
+              />
+              <Route
+                path="/contact"
+                element={
+                  <PublicLayout>
+                    <Contact />
+                  </PublicLayout>
+                }
+              />
+
+              {/* Admin Routes */}
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route
+                path="/admin/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </AnimatePresence>
+        </Router>
+      </LanguageProvider>
+    </AuthProvider>
   )
 }
 

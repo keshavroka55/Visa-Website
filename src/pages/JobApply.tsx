@@ -40,199 +40,67 @@ const JobApply = () => {
     certificatesFile: null,
   })
 
-  // Mock job data
+  // Load jobs from localStorage (admin-managed jobs) or use defaults
   useEffect(() => {
-    const currentDate = new Date()
+    const storedJobs = localStorage.getItem("admin_jobs")
+    let jobsData: Job[] = []
 
-    // Generate mock jobs with some recent ones for alert
-    const mockJobs: Job[] = [
-      {
-        id: 1,
-        title: "Electrician",
-        country: "Malaysia",
-        location: "Kuala Lumpur",
-        type: "Electrician",
-        duration: "2 years",
-        postedDate: new Date(currentDate.setDate(currentDate.getDate() - 5)).toISOString().split("T")[0],
-        description:
-          "We are looking for experienced electricians to work on commercial and residential projects in Kuala Lumpur. The position includes installation, maintenance, and repair of electrical systems.",
-        requirements: [
-          "Minimum 3 years experience",
-          "Electrical certification",
-          "English communication skills",
-          "Ability to read electrical plans",
-        ],
-        salary: "MYR 3,500 - 4,500 per month",
-      },
-      {
-        id: 2,
-        title: "Factory Worker",
-        country: "Japan",
-        location: "Osaka",
-        type: "Factory Worker",
-        duration: "3 years",
-        postedDate: new Date(currentDate.setDate(currentDate.getDate() - 15)).toISOString().split("T")[0],
-        description:
-          "Assembly line workers needed for electronics manufacturing plant in Osaka. Training will be provided, including Japanese language lessons.",
-        requirements: [
-          "Good manual dexterity",
-          "Ability to stand for long periods",
-          "Basic English",
-          "Willingness to learn Japanese",
-        ],
-        salary: "JPY 180,000 - 220,000 per month",
-      },
-      {
-        id: 3,
-        title: "Chef",
-        country: "UAE",
-        location: "Dubai",
-        type: "Cook",
-        duration: "2 years",
-        postedDate: new Date(currentDate.setDate(currentDate.getDate() - 8)).toISOString().split("T")[0],
-        description:
-          "International hotel chain seeking experienced chefs for their Dubai location. Various positions available including sous chef, line cook, and pastry chef.",
-        requirements: [
-          "Culinary degree or equivalent experience",
-          "Minimum 2 years in hotel/restaurant kitchen",
-          "Knowledge of international cuisines",
-          "Food safety certification",
-        ],
-        salary: "AED 5,000 - 8,000 per month + accommodation",
-      },
-      {
-        id: 4,
-        title: "Security Guard",
-        country: "Malaysia",
-        location: "Penang",
-        type: "Security Guard",
-        duration: "2 years",
-        postedDate: new Date(currentDate.setDate(currentDate.getDate() - 25)).toISOString().split("T")[0],
-        description:
-          "Security personnel required for shopping malls and commercial buildings in Penang. Responsibilities include patrolling premises, monitoring surveillance systems, and controlling access.",
-        requirements: [
-          "Previous security experience preferred",
-          "Physical fitness",
-          "Basic English communication",
-          "Clean background check",
-        ],
-        salary: "MYR 2,800 - 3,200 per month",
-      },
-      {
-        id: 5,
-        title: "Construction Worker",
-        country: "Qatar",
-        location: "Doha",
-        type: "Construction Worker",
-        duration: "3 years",
-        postedDate: new Date(currentDate.setDate(currentDate.getDate() - 18)).toISOString().split("T")[0],
-        description:
-          "Construction workers needed for major infrastructure projects in Doha. Various roles available including general laborers, masons, and carpenters.",
-        requirements: [
-          "Previous construction experience",
-          "Physical stamina",
-          "Ability to work in hot climate",
-          "Basic safety knowledge",
-        ],
-        salary: "QAR 1,500 - 2,500 per month + accommodation and meals",
-      },
-      {
-        id: 6,
-        title: "Plumber",
-        country: "Romania",
-        location: "Bucharest",
-        type: "Plumber",
-        duration: "2 years",
-        postedDate: new Date(currentDate.setDate(currentDate.getDate() - 3)).toISOString().split("T")[0],
-        description:
-          "Experienced plumbers needed for residential and commercial projects in Bucharest. Work includes installation, repair, and maintenance of plumbing systems.",
-        requirements: [
-          "Plumbing certification",
-          "Minimum 2 years experience",
-          "Knowledge of plumbing codes",
-          "Problem-solving skills",
-        ],
-        salary: "RON 4,000 - 5,500 per month",
-      },
-      {
-        id: 7,
-        title: "Cleaner",
-        country: "UAE",
-        location: "Abu Dhabi",
-        type: "Cleaner",
-        duration: "2 years",
-        postedDate: new Date(currentDate.setDate(currentDate.getDate() - 12)).toISOString().split("T")[0],
-        description:
-          "Cleaning staff required for hotels and office buildings in Abu Dhabi. Duties include general cleaning, sanitation, and maintaining cleanliness of assigned areas.",
-        requirements: [
-          "Previous cleaning experience preferred",
-          "Attention to detail",
-          "Physical stamina",
-          "Basic English communication",
-        ],
-        salary: "AED 1,800 - 2,500 per month + accommodation",
-      },
-      {
-        id: 8,
-        title: "Driver",
-        country: "Poland",
-        location: "Warsaw",
-        type: "Driver",
-        duration: "2 years",
-        postedDate: new Date(currentDate.setDate(currentDate.getDate() - 7)).toISOString().split("T")[0],
-        description:
-          "Professional drivers needed for logistics company in Warsaw. Both delivery and long-haul positions available.",
-        requirements: [
-          "Valid driver's license",
-          "Clean driving record",
-          "Experience in professional driving",
-          "Basic English or willingness to learn",
-        ],
-        salary: "PLN 4,500 - 6,000 per month",
-      },
-      {
-        id: 9,
-        title: "Technician",
-        country: "Japan",
-        location: "Tokyo",
-        type: "Technician",
-        duration: "3 years",
-        postedDate: new Date(currentDate.setDate(currentDate.getDate() - 2)).toISOString().split("T")[0],
-        description:
-          "Technical staff needed for automotive manufacturing plant in Tokyo. Roles include equipment maintenance, quality control, and production support.",
-        requirements: [
-          "Technical certification or degree",
-          "Experience with industrial equipment",
-          "Problem-solving skills",
-          "Willingness to learn Japanese",
-        ],
-        salary: "JPY 220,000 - 280,000 per month",
-      },
-      {
-        id: 10,
-        title: "Waiter/Waitress",
-        country: "Qatar",
-        location: "Doha",
-        type: "Waiter",
-        duration: "2 years",
-        postedDate: new Date(currentDate.setDate(currentDate.getDate() - 10)).toISOString().split("T")[0],
-        description:
-          "Food service staff needed for luxury hotels and restaurants in Doha. Experience in fine dining service preferred.",
-        requirements: [
-          "Previous restaurant experience",
-          "Customer service skills",
-          "Good English communication",
-          "Professional appearance",
-        ],
-        salary: "QAR 2,500 - 3,500 per month + accommodation and meals",
-      },
-    ]
+    if (storedJobs) {
+      try {
+        jobsData = JSON.parse(storedJobs)
+      } catch (error) {
+        console.error("Error loading jobs:", error)
+      }
+    }
 
-    setJobs(mockJobs)
-    setFilteredJobs(mockJobs)
+    // If no admin jobs, use default jobs
+    if (jobsData.length === 0) {
+      const currentDate = new Date()
+      jobsData = [
+        {
+          id: 1,
+          title: "Electrician",
+          country: "Malaysia",
+          location: "Kuala Lumpur",
+          type: "Electrician",
+          duration: "2 years",
+          postedDate: new Date(currentDate.setDate(currentDate.getDate() - 5)).toISOString().split("T")[0],
+          description:
+            "We are looking for experienced electricians to work on commercial and residential projects in Kuala Lumpur. The position includes installation, maintenance, and repair of electrical systems.",
+          requirements: [
+            "Minimum 3 years experience",
+            "Electrical certification",
+            "English communication skills",
+            "Ability to read electrical plans",
+          ],
+          salary: "MYR 3,500 - 4,500 per month",
+        },
+        {
+          id: 2,
+          title: "Factory Worker",
+          country: "Japan",
+          location: "Osaka",
+          type: "Factory Worker",
+          duration: "3 years",
+          postedDate: new Date(currentDate.setDate(currentDate.getDate() - 15)).toISOString().split("T")[0],
+          description:
+            "Assembly line workers needed for electronics manufacturing plant in Osaka. Training will be provided, including Japanese language lessons.",
+          requirements: [
+            "Good manual dexterity",
+            "Ability to stand for long periods",
+            "Basic English",
+            "Willingness to learn Japanese",
+          ],
+          salary: "JPY 180,000 - 220,000 per month",
+        },
+      ]
+    }
+
+    setJobs(jobsData)
+    setFilteredJobs(jobsData)
 
     // Check if there are jobs posted within the last 10 days
-    const recentJobs = mockJobs.filter((job) => {
+    const recentJobs = jobsData.filter((job) => {
       const postedDate = new Date(job.postedDate)
       const today = new Date()
       const daysDifference = Math.floor((today.getTime() - postedDate.getTime()) / (1000 * 3600 * 24))
@@ -268,8 +136,7 @@ const JobApply = () => {
     setFilteredJobs(result)
   }, [selectedCountry, selectedJobType, searchTerm, jobs])
 
-  // Handle job card click
-  const handleJobSelect = (job: Job) => {
+const handleJobSelect = (job: Job) => {
   setSelectedJob(job)
   const formElement = document.getElementById("application-form")
   if (formElement) {
@@ -277,7 +144,9 @@ const JobApply = () => {
   }
 }
 
+// Handle alert click
 const handleAlertClick = () => {
+  // Find the most recent job
   const sortedJobs = [...jobs].sort((a, b) => new Date(b.postedDate).getTime() - new Date(a.postedDate).getTime())
   const recentJob = sortedJobs[0]
   setSelectedJob(recentJob)
@@ -335,16 +204,16 @@ const handleAlertClick = () => {
   return (
     <div>
       {/* Hero Section */}
-      <section className="bg-blue-700 text-white py-16">
-        <div className="container-custom">
+      <section className="bg-blue-700 text-white py-8 md:py-10">
+        <div className="container-custom viewport-contained">
           <motion.div
-            className="text-center max-w-3xl mx-auto"
+            className="text-center max-w-xl mx-auto"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">Job Opportunities</h1>
-            <p className="text-xl text-blue-100">
+            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold mb-3">Job Opportunities</h1>
+            <p className="text-sm md:text-base text-blue-100">
               Browse and apply for international job opportunities across multiple countries.
             </p>
           </motion.div>
@@ -354,18 +223,18 @@ const handleAlertClick = () => {
       {/* Alert for Recent Jobs */}
       {showAlert && (
         <motion.div
-          className="bg-yellow-50 border-l-4 border-red-400 p-4 my-6 mx-4 md:mx-auto md:max-w-7xl"
+          className="bg-yellow-50 border-l-4 border-yellow-400 p-4 my-6 mx-4 md:mx-auto md:max-w-7xl"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
           <div className="flex items-center cursor-pointer" onClick={handleAlertClick}>
             <div className="flex-shrink-0">
-              <AlertTriangle className="h-5 w-5 text-red-400" />
+              <AlertTriangle className="h-5 w-5 text-yellow-400" />
             </div>
             <div className="ml-3">
-              <p className="text-2xl text-red-700">
-                <span className="font-medium">New job opportunities available!</span> The recent/current job oppurtinities are
+              <p className="text-sm text-yellow-700">
+                <span className="font-medium">New job opportunities available!</span> We have recently added new
                 positions. Click here to view.
               </p>
             </div>
@@ -374,8 +243,8 @@ const handleAlertClick = () => {
       )}
 
       {/* Job Search and Filter */}
-      <section className="py-8 bg-white">
-        <div className="container-custom">
+      <section className="py-6 md:py-10 bg-white">
+        <div className="container-custom viewport-contained">
           <div className="bg-gray-50 rounded-xl shadow-md p-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               {/* Search */}
@@ -441,8 +310,8 @@ const handleAlertClick = () => {
       </section>
 
       {/* Job Listings */}
-      <section className="py-8 bg-white">
-        <div className="container-custom">
+      <section className="py-6 md:py-10 bg-white">
+        <div className="container-custom viewport-contained">
           <h2 className="text-2xl font-bold mb-6">Available Positions ({filteredJobs.length})</h2>
 
           {filteredJobs.length === 0 ? (
