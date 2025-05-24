@@ -233,7 +233,7 @@ const handleAlertClick = () => {
               <AlertTriangle className="h-5 w-5 text-yellow-400" />
             </div>
             <div className="ml-3">
-              <p className="text-sm text-yellow-700">
+              <p className="text-3xl text-red-700">
                 <span className="font-medium">New job opportunities available!</span> We have recently added new
                 positions. Click here to view.
               </p>

@@ -30,28 +30,38 @@ const Navbar = () => {
   }
 
   return (
-    <nav className="bg-white shadow-md py-2 md:py-3 sticky top-0 z-50">
-      <div className="container-custom">
+    <nav className="bg-white shadow-md py-2 md:py-3 sticky top-0 z-50 w-full">
+      <div className="container-custom viewport-contained">
         <div className="flex justify-between items-center">
           <Link to="/" className="flex items-center space-x-2">
-            <img src="/placeholder.svg?height=32&width=32" alt="Visa Center Logo" className="h-8 w-8" />
-            <span className="text-lg md:text-xl font-bold text-blue-700">VisaCenter</span>
+            <img src="/placeholder.svg?height=32&width=32" alt="Visa Center Logo" className="h-7 w-7" />
+            <span className="text-base md:text-lg font-bold text-blue-700">VisaCenter</span>
           </Link>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex space-x-4 lg:space-x-6">
+          <div className="hidden md:flex space-x-3 lg:space-x-5 items-center">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
                 to={link.path}
                 className={`${
                   isActive(link.path) ? "text-blue-700 font-medium" : "text-gray-600 hover:text-blue-700"
-                } transition-colors text-sm`}
+                } transition-colors text-xs lg:text-sm`}
               >
                 {link.name}
               </Link>
             ))}
-            <LanguageSwitcher />
+            <div className="ml-1">
+              <LanguageSwitcher />
+            </div>
+            {/* Admin Access Link */}
+            <Link
+              to="/admin/login"
+              className="text-xs text-gray-700 hover:text-blue-600 transition-colors ml-2"
+              title="Admin Access"
+            >
+              Admin
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}

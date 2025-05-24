@@ -71,7 +71,7 @@ const AdminLogin = () => {
             <Lock className="h-8 w-8 text-blue-700" />
           </div>
           <h2 className="text-3xl font-bold text-white">Admin Login</h2>
-          <p className="mt-2 text-blue-100">Access the VisaCenter admin dashboard</p>
+          <p className="mt-2 text-blue-100">Only Access by Authorized User!</p>
         </div>
 
         {/* Login Form */}
@@ -166,19 +166,6 @@ const AdminLogin = () => {
               )}
             </button>
           </form>
-
-          {/* Demo Credentials */}
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            <p className="text-xs text-gray-600 text-center mb-2">Demo Credentials:</p>
-            <div className="text-xs text-gray-700 space-y-1">
-              <p>
-                <strong>Username:</strong> admin
-              </p>
-              <p>
-                <strong>Password:</strong> visacenter2024
-              </p>
-            </div>
-          </div>
         </motion.div>
       </motion.div>
     </div>
