@@ -52,7 +52,7 @@ const Home = () => {
               <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 text-white">{t("home.hero.title")}</h1>
               <p className="text-base md:text-lg text-blue-100 mb-6">{t("home.hero.subtitle")}</p>
               <div className="flex flex-wrap gap-3">
-                <Link to="/services" className="btn bg-white text-blue-700 hover:bg-blue-50">
+                <Link to="/szervices" className="btn bg-white text-blue-700 hover:bg-blue-50">
                   {t("home.button.services")}
                 </Link>
                 <Link to="/job-apply" className="btn bg-green-600 text-white hover:bg-green-700">

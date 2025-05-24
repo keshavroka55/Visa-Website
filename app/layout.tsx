@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'best demand',
+  title: 'Best Demand',
   description: 'chaged to keshav rojan and sweekeer',
   generator: 'v0.dev',
 }

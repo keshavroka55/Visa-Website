@@ -1,10 +1,18 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { Clock, Filter, Search, MapPin, Briefcase, Calendar, Upload, ArrowRight, AlertTriangle } from "lucide-react"
+import { createClient } from "@supabase/supabase-js"
+import { Clock, Filter, Search, MapPin, Briefcase, Calendar, Upload, ArrowRight, AlertTriangle, X } from "lucide-react"
+
+// Initialize Supabase client
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+if (!supabaseUrl || !supabaseKey) {
+  throw new Error("Missing Supabase environment variables: NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY")
+}
+const supabase = createClient(supabaseUrl, supabaseKey)
 
 interface Job {
   id: number
@@ -13,7 +21,7 @@ interface Job {
   location: string
   type: string
   duration: string
-  postedDate: string
+  posted_date: string
   description: string
   requirements: string[]
   salary: string
@@ -35,214 +43,58 @@ const JobApply = () => {
     phone: "",
     country: "",
     jobInterest: "",
-    passportFile: null,
-    cvFile: null,
-    certificatesFile: null,
+    passportFile: null as File | null,
+    cvFile: null as File | null,
+    certificatesFile: null as File | null,
   })
 
-  // Mock job data
+  // Fetch jobs from Supabase
   useEffect(() => {
-    const currentDate = new Date()
+    const fetchJobs = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("jobs")
+          .select("*")
+          .order("posted_date", { ascending: false })
 
-    // Generate mock jobs with some recent ones for alert
-    const mockJobs: Job[] = [
-      {
-        id: 1,
-        title: "Electrician",
-        country: "Malaysia",
-        location: "Kuala Lumpur",
-        type: "Electrician",
-        duration: "2 years",
-        postedDate: new Date(currentDate.setDate(currentDate.getDate() - 5)).toISOString().split("T")[0],
-        description:
-          "We are looking for experienced electricians to work on commercial and residential projects in Kuala Lumpur. The position includes installation, maintenance, and repair of electrical systems.",
-        requirements: [
-          "Minimum 3 years experience",
-          "Electrical certification",
-          "English communication skills",
-          "Ability to read electrical plans",
-        ],
-        salary: "MYR 3,500 - 4,500 per month",
-      },
-      {
-        id: 2,
-        title: "Factory Worker",
-        country: "Japan",
-        location: "Osaka",
-        type: "Factory Worker",
-        duration: "3 years",
-        postedDate: new Date(currentDate.setDate(currentDate.getDate() - 15)).toISOString().split("T")[0],
-        description:
-          "Assembly line workers needed for electronics manufacturing plant in Osaka. Training will be provided, including Japanese language lessons.",
-        requirements: [
-          "Good manual dexterity",
-          "Ability to stand for long periods",
-          "Basic English",
-          "Willingness to learn Japanese",
-        ],
-        salary: "JPY 180,000 - 220,000 per month",
-      },
-      {
-        id: 3,
-        title: "Chef",
-        country: "UAE",
-        location: "Dubai",
-        type: "Cook",
-        duration: "2 years",
-        postedDate: new Date(currentDate.setDate(currentDate.getDate() - 8)).toISOString().split("T")[0],
-        description:
-          "International hotel chain seeking experienced chefs for their Dubai location. Various positions available including sous chef, line cook, and pastry chef.",
-        requirements: [
-          "Culinary degree or equivalent experience",
-          "Minimum 2 years in hotel/restaurant kitchen",
-          "Knowledge of international cuisines",
-          "Food safety certification",
-        ],
-        salary: "AED 5,000 - 8,000 per month + accommodation",
-      },
-      {
-        id: 4,
-        title: "Security Guard",
-        country: "Malaysia",
-        location: "Penang",
-        type: "Security Guard",
-        duration: "2 years",
-        postedDate: new Date(currentDate.setDate(currentDate.getDate() - 25)).toISOString().split("T")[0],
-        description:
-          "Security personnel required for shopping malls and commercial buildings in Penang. Responsibilities include patrolling premises, monitoring surveillance systems, and controlling access.",
-        requirements: [
-          "Previous security experience preferred",
-          "Physical fitness",
-          "Basic English communication",
-          "Clean background check",
-        ],
-        salary: "MYR 2,800 - 3,200 per month",
-      },
-      {
-        id: 5,
-        title: "Construction Worker",
-        country: "Qatar",
-        location: "Doha",
-        type: "Construction Worker",
-        duration: "3 years",
-        postedDate: new Date(currentDate.setDate(currentDate.getDate() - 18)).toISOString().split("T")[0],
-        description:
-          "Construction workers needed for major infrastructure projects in Doha. Various roles available including general laborers, masons, and carpenters.",
-        requirements: [
-          "Previous construction experience",
-          "Physical stamina",
-          "Ability to work in hot climate",
-          "Basic safety knowledge",
-        ],
-        salary: "QAR 1,500 - 2,500 per month + accommodation and meals",
-      },
-      {
-        id: 6,
-        title: "Plumber",
-        country: "Romania",
-        location: "Bucharest",
-        type: "Plumber",
-        duration: "2 years",
-        postedDate: new Date(currentDate.setDate(currentDate.getDate() - 3)).toISOString().split("T")[0],
-        description:
-          "Experienced plumbers needed for residential and commercial projects in Bucharest. Work includes installation, repair, and maintenance of plumbing systems.",
-        requirements: [
-          "Plumbing certification",
-          "Minimum 2 years experience",
-          "Knowledge of plumbing codes",
-          "Problem-solving skills",
-        ],
-        salary: "RON 4,000 - 5,500 per month",
-      },
-      {
-        id: 7,
-        title: "Cleaner",
-        country: "UAE",
-        location: "Abu Dhabi",
-        type: "Cleaner",
-        duration: "2 years",
-        postedDate: new Date(currentDate.setDate(currentDate.getDate() - 12)).toISOString().split("T")[0],
-        description:
-          "Cleaning staff required for hotels and office buildings in Abu Dhabi. Duties include general cleaning, sanitation, and maintaining cleanliness of assigned areas.",
-        requirements: [
-          "Previous cleaning experience preferred",
-          "Attention to detail",
-          "Physical stamina",
-          "Basic English communication",
-        ],
-        salary: "AED 1,800 - 2,500 per month + accommodation",
-      },
-      {
-        id: 8,
-        title: "Driver",
-        country: "Poland",
-        location: "Warsaw",
-        type: "Driver",
-        duration: "2 years",
-        postedDate: new Date(currentDate.setDate(currentDate.getDate() - 7)).toISOString().split("T")[0],
-        description:
-          "Professional drivers needed for logistics company in Warsaw. Both delivery and long-haul positions available.",
-        requirements: [
-          "Valid driver's license",
-          "Clean driving record",
-          "Experience in professional driving",
-          "Basic English or willingness to learn",
-        ],
-        salary: "PLN 4,500 - 6,000 per month",
-      },
-      {
-        id: 9,
-        title: "Technician",
-        country: "Japan",
-        location: "Tokyo",
-        type: "Technician",
-        duration: "3 years",
-        postedDate: new Date(currentDate.setDate(currentDate.getDate() - 2)).toISOString().split("T")[0],
-        description:
-          "Technical staff needed for automotive manufacturing plant in Tokyo. Roles include equipment maintenance, quality control, and production support.",
-        requirements: [
-          "Technical certification or degree",
-          "Experience with industrial equipment",
-          "Problem-solving skills",
-          "Willingness to learn Japanese",
-        ],
-        salary: "JPY 220,000 - 280,000 per month",
-      },
-      {
-        id: 10,
-        title: "Waiter/Waitress",
-        country: "Qatar",
-        location: "Doha",
-        type: "Waiter",
-        duration: "2 years",
-        postedDate: new Date(currentDate.setDate(currentDate.getDate() - 10)).toISOString().split("T")[0],
-        description:
-          "Food service staff needed for luxury hotels and restaurants in Doha. Experience in fine dining service preferred.",
-        requirements: [
-          "Previous restaurant experience",
-          "Customer service skills",
-          "Good English communication",
-          "Professional appearance",
-        ],
-        salary: "QAR 2,500 - 3,500 per month + accommodation and meals",
-      },
-    ]
+        if (error) {
+          console.error("Error fetching jobs:", error.message, error.details)
+          return
+        }
 
-    setJobs(mockJobs)
-    setFilteredJobs(mockJobs)
+        const fetchedJobs: Job[] = data.map((job) => ({
+          id: job.id,
+          title: job.title,
+          country: job.country,
+          location: job.location,
+          type: job.type,
+          duration: job.duration,
+          posted_date: job.posted_date,
+          description: job.description,
+          requirements: job.requirements,
+          salary: job.salary,
+        }))
 
-    // Check if there are jobs posted within the last 10 days
-    const recentJobs = mockJobs.filter((job) => {
-      const postedDate = new Date(job.postedDate)
-      const today = new Date()
-      const daysDifference = Math.floor((today.getTime() - postedDate.getTime()) / (1000 * 3600 * 24))
-      return daysDifference < 10
-    })
+        setJobs(fetchedJobs)
+        setFilteredJobs(fetchedJobs)
 
-    setShowAlert(recentJobs.length > 0)
+        const recentJobs = fetchedJobs.filter((job) => {
+          const postedDate = new Date(job.posted_date)
+          const today = new Date()
+          const daysDifference = Math.floor((today.getTime() - postedDate.getTime()) / (1000 * 3600 * 24))
+          return daysDifference < 10
+        })
+
+        setShowAlert(recentJobs.length > 0)
+      } catch (error: any) {
+        console.error("Unexpected error fetching jobs:", error.message)
+      }
+    }
+
+    fetchJobs()
   }, [])
 
-  // Filter jobs based on selection
+  // Filter jobs
   useEffect(() => {
     let result = [...jobs]
 
@@ -268,83 +120,153 @@ const JobApply = () => {
     setFilteredJobs(result)
   }, [selectedCountry, selectedJobType, searchTerm, jobs])
 
-  // Handle job card click
+  // Handle job selection
   const handleJobSelect = (job: Job) => {
-  setSelectedJob(job)
-  const formElement = document.getElementById("application-form")
-  if (formElement) {
-    window.scrollTo({ top: formElement.offsetTop - 100, behavior: "smooth" })
+    setSelectedJob(job)
+    setFormData((prev) => ({ ...prev, jobInterest: job.title }))
+    const formElement = document.getElementById("application-form")
+    if (formElement) {
+      window.scrollTo({ top: formElement.offsetTop - 100, behavior: "smooth" })
+    }
   }
-}
 
-const handleAlertClick = () => {
-  const sortedJobs = [...jobs].sort((a, b) => new Date(b.postedDate).getTime() - new Date(a.postedDate).getTime())
-  const recentJob = sortedJobs[0]
-  setSelectedJob(recentJob)
-  const formElement = document.getElementById("application-form")
-  if (formElement) {
-    window.scrollTo({ top: formElement.offsetTop - 100, behavior: "smooth" })
+  // Handle alert click
+  const handleAlertClick = () => {
+    const sortedJobs = [...jobs].sort((a, b) => new Date(b.posted_date).getTime() - new Date(a.posted_date).getTime())
+    const recentJob = sortedJobs[0]
+    setSelectedJob(recentJob)
+    setFormData((prev) => ({ ...prev, jobInterest: recentJob.title }))
+    const formElement = document.getElementById("application-form")
+    if (formElement) {
+      window.scrollTo({ top: formElement.offsetTop - 100, behavior: "smooth" })
+    }
   }
-}
 
   // Handle form input change
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [name]: value,
-    })
+    }))
   }
 
   // Handle file input change
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setFormData({
-        ...formData,
-        [e.target.name]: e.target.files[0],
-      })
+      if (e.target.files[0].size > 5 * 1024 * 1024) {
+        alert("File size must be less than 5MB")
+        return
+      }
+      setFormData((prev) => ({
+        ...prev,
+        [e.target.name]: e.target.files ? e.target.files[0] : null,
+      }))
     }
   }
 
   // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    alert("Application submitted successfully! We will contact you soon.")
 
-    // Reset form
-    setFormData({
-      fullName: "",
-      email: "",
-      phone: "",
-      country: "",
-      jobInterest: selectedJob ? selectedJob.title : "",
-      passportFile: null,
-      cvFile: null,
-      certificatesFile: null,
-    })
+    if (!selectedJob) {
+      alert("Please select a job to apply for.")
+      return
+    }
 
-    setSelectedJob(null)
+    try {
+      // Upload files to Supabase Storage
+      const filePaths: { [key: string]: string | null } = {
+        passportFile: null,
+        cvFile: null,
+        certificatesFile: null,
+      }
+
+      for (const key of ["passportFile", "cvFile", "certificatesFile"] as const) {
+        const file = formData[key]
+        if (file) {
+          const fileExt = file.name.split(".").pop()
+          const fileName = `${Date.now()}-${key}.${fileExt}`
+          console.log(`Uploading ${key} to documents bucket: ${fileName}`)
+          const { data, error } = await supabase.storage.from("documents").upload(fileName, file)
+          if (error) {
+            console.error(`Storage error for ${key}:`, error.message, error)
+            throw new Error(`Failed to upload ${key}: ${error.message}`)
+          }
+          filePaths[key] = data?.path || null
+          console.log(`Uploaded ${key}: ${filePaths[key]}`)
+        }
+      }
+
+      // Insert form and job data
+      const applicationData = {
+        full_name: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        country: formData.country,
+        job_interest: formData.jobInterest,
+        job_id: selectedJob.id,
+        job_title: selectedJob.title,
+        job_country: selectedJob.country,
+        job_location: selectedJob.location,
+        job_type: selectedJob.type,
+        job_salary: selectedJob.salary,
+        passport_file_path: filePaths.passportFile,
+        cv_file_path: filePaths.cvFile,
+        certificates_file_path: filePaths.certificatesFile,
+      }
+      console.log("Inserting application:", applicationData)
+      const { error } = await supabase.from("applications").insert(applicationData)
+      if (error) {
+        console.error("Database error:", error.message, error.details, error.hint)
+        throw new Error(`Failed to insert application: ${error.message}`)
+      }
+
+      alert("Application submitted successfully! We will contact you soon.")
+
+      // Reset form and hide it
+      setFormData({
+        fullName: "",
+        email: "",
+        phone: "",
+        country: "",
+        jobInterest: "",
+        passportFile: null,
+        cvFile: null,
+        certificatesFile: null,
+      })
+      setSelectedJob(null)
+    } catch (error: any) {
+      console.error("Error submitting application:", error.message, error)
+      alert(`Failed to submit application: ${error.message}. Please try again.`)
+    }
   }
 
-  // Get unique countries for filter
+  // Reset selected job
+  const handleResetJob = () => {
+    setSelectedJob(null)
+    setFormData((prev) => ({ ...prev, jobInterest: "" }))
+  }
+
+  // Get unique countries
   const countries = Array.from(new Set(jobs.map((job) => job.country)))
 
-  // Get unique job types for filter
+  // Get unique job types
   const jobTypes = Array.from(new Set(jobs.map((job) => job.type)))
 
   return (
     <div>
       {/* Hero Section */}
-      <section className="bg-blue-700 text-white py-16">
+      <section className="section bg-blue-700 text-white">
         <div className="container-custom">
           <motion.div
-            className="text-center max-w-3xl mx-auto"
+            className="text-center max-w-4xl mx-auto"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">Job Opportunities</h1>
-            <p className="text-xl text-blue-100">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">Job Opportunities</h1>
+            <p className="text-lg md:text-xl text-blue-100">
               Browse and apply for international job opportunities across multiple countries.
             </p>
           </motion.div>
@@ -354,19 +276,19 @@ const handleAlertClick = () => {
       {/* Alert for Recent Jobs */}
       {showAlert && (
         <motion.div
-          className="bg-yellow-50 border-l-4 border-red-400 p-4 my-6 mx-4 md:mx-auto md:max-w-7xl"
+          className="container-custom section bg-yellow-50 border-l-4 border-red-400"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
           <div className="flex items-center cursor-pointer" onClick={handleAlertClick}>
             <div className="flex-shrink-0">
-              <AlertTriangle className="h-5 w-5 text-red-400" />
+              <AlertTriangle className="h-6 w-6 text-red-400" />
             </div>
             <div className="ml-3">
-              <p className="text-2xl text-red-700">
-                <span className="font-medium">New job opportunities available!</span> The recent/current job oppurtinities are
-                positions. Click here to view.
+              <p className="text-lg md:text-xl text-red-700">
+                <span className="font-medium">New job opportunities available!</span> Check out our latest openings for
+                exciting roles. Click to view.
               </p>
             </div>
           </div>
@@ -374,11 +296,10 @@ const handleAlertClick = () => {
       )}
 
       {/* Job Search and Filter */}
-      <section className="py-8 bg-white">
+      <section className="section bg-white">
         <div className="container-custom">
-          <div className="bg-gray-50 rounded-xl shadow-md p-6">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              {/* Search */}
+          <div className="bg-gray-50 rounded-xl shadow-md p-8">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="col-span-1 md:col-span-2">
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -386,22 +307,20 @@ const handleAlertClick = () => {
                   </div>
                   <input
                     type="text"
-                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md text-base bg-white placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Search jobs..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
               </div>
-
-              {/* Country Filter */}
               <div>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Filter className="h-5 w-5 text-gray-400" />
                   </div>
                   <select
-                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md text-base bg-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     value={selectedCountry}
                     onChange={(e) => setSelectedCountry(e.target.value)}
                   >
@@ -414,15 +333,13 @@ const handleAlertClick = () => {
                   </select>
                 </div>
               </div>
-
-              {/* Job Type Filter */}
               <div>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Briefcase className="h-5 w-5 text-gray-400" />
                   </div>
                   <select
-                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md text-base bg-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     value={selectedJobType}
                     onChange={(e) => setSelectedJobType(e.target.value)}
                   >
@@ -441,15 +358,14 @@ const handleAlertClick = () => {
       </section>
 
       {/* Job Listings */}
-      <section className="py-8 bg-white">
+      <section className="section bg-white">
         <div className="container-custom">
-          <h2 className="text-2xl font-bold mb-6">Available Positions ({filteredJobs.length})</h2>
-
+          <h2 className="text-2xl md:text-3xl font-bold mb-8">Available Positions ({filteredJobs.length})</h2>
           {filteredJobs.length === 0 ? (
-            <div className="text-center py-12 bg-gray-50 rounded-xl">
-              <p className="text-lg text-gray-600">No jobs found matching your criteria.</p>
+            <div className="text-center py-16 bg-gray-50 rounded-xl">
+              <p className="text-lg md:text-xl text-gray-600">No jobs found matching your criteria.</p>
               <button
-                className="mt-4 btn btn-outline"
+                className="mt-4 btn btn-outline text-base"
                 onClick={() => {
                   setSelectedCountry("")
                   setSelectedJobType("")
@@ -460,10 +376,9 @@ const handleAlertClick = () => {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredJobs.map((job) => {
-                // Check if job is recent (less than 10 days old)
-                const postedDate = new Date(job.postedDate)
+                const postedDate = new Date(job.posted_date)
                 const today = new Date()
                 const daysDifference = Math.floor((today.getTime() - postedDate.getTime()) / (1000 * 3600 * 24))
                 const isRecent = daysDifference < 10
@@ -479,39 +394,37 @@ const handleAlertClick = () => {
                     transition={{ duration: 0.4 }}
                     onClick={() => handleJobSelect(job)}
                   >
-                    <div className="p-6">
-                      <div className="flex justify-between items-start mb-3">
-                        <h3 className="text-xl font-bold">{job.title}</h3>
+                    <div className="p-8">
+                      <div className="flex justify-between items-start mb-4">
+                        <h3 className="text-xl md:text-2xl font-bold">{job.title}</h3>
                         {isRecent && (
-                          <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                          <span className="bg-green-100 text-green-800 text-sm font-medium px-2.5 py-0.5 rounded">
                             New
                           </span>
                         )}
                       </div>
-
-                      <div className="space-y-2 mb-4">
-                        <div className="flex items-center text-gray-600">
-                          <MapPin className="h-4 w-4 mr-2" />
+                      <div className="space-y-3 mb-6">
+                        <div className="flex items-center text-gray-600 text-base">
+                          <MapPin className="h-5 w-5 mr-2" />
                           <span>
                             {job.location}, {job.country}
                           </span>
                         </div>
-                        <div className="flex items-center text-gray-600">
-                          <Briefcase className="h-4 w-4 mr-2" />
+                        <div className="flex items-center text-gray-600 text-base">
+                          <Briefcase className="h-5 w-5 mr-2" />
                           <span>{job.type}</span>
                         </div>
-                        <div className="flex items-center text-gray-600">
-                          <Calendar className="h-4 w-4 mr-2" />
+                        <div className="flex items-center text-gray-600 text-base">
+                          <Calendar className="h-5 w-5 mr-2" />
                           <span>{job.duration}</span>
                         </div>
-                        <div className="flex items-center text-gray-600">
-                          <Clock className="h-4 w-4 mr-2" />
-                          <span>Posted: {job.postedDate}</span>
+                        <div className="flex items-center text-gray-600 text-base">
+                          <Clock className="h-5 w-5 mr-2" />
+                          <span>Posted: {job.posted_date}</span>
                         </div>
                       </div>
-
-                      <button className="w-full btn btn-primary flex justify-center items-center">
-                        Apply Now <ArrowRight className="ml-2 h-4 w-4" />
+                      <button className="w-full btn btn-primary flex justify-center items-center text-base">
+                        Apply Now <ArrowRight className="ml-2 h-5 w-5" />
                       </button>
                     </div>
                   </motion.div>
@@ -523,228 +436,208 @@ const handleAlertClick = () => {
       </section>
 
       {/* Application Form */}
-      <section id="application-form" className="py-16 bg-gray-50">
-        <div className="container-custom">
-          <motion.div
-            className="text-center mb-12"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <h2 className="text-3xl font-bold mb-4">Apply for a Position</h2>
-            <p className="text-gray-600 max-w-3xl mx-auto">
-              {selectedJob
-                ? `Complete the form below to apply for the ${selectedJob.title} position in ${selectedJob.country}.`
-                : "Select a job from above or complete the form below to apply for a position."}
-            </p>
-          </motion.div>
-
-          {/* Selected Job Details */}
-          {selectedJob && (
+      {selectedJob && (
+        <section id="application-form" className="section bg-gray-50">
+          <div className="container-custom">
             <motion.div
-              className="bg-white rounded-xl shadow-md p-6 mb-8"
+              className="text-center mb-12"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <h2 className="text-2xl md:text-3xl font-bold mb-4">Apply for {selectedJob.title}</h2>
+              <p className="text-gray-600 text-base md:text-lg max-w-4xl mx-auto">
+                Complete the form below to apply for the {selectedJob.title} position in {selectedJob.country}.
+              </p>
+            </motion.div>
+            <motion.div
+              className="bg-white rounded-xl shadow-md p-8 mb-10"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
             >
-              <h3 className="text-2xl font-bold mb-4">{selectedJob.title}</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl md:text-2xl font-bold">{selectedJob.title}</h3>
+                <button
+                  onClick={handleResetJob}
+                  className="text-gray-500 hover:text-gray-700 flex items-center text-sm"
+                >
+                  <X className="h-5 w-5 mr-1" /> Clear Selection
+                </button>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-6">
                 <div>
-                  <p className="text-gray-500 mb-1">Location</p>
-                  <p className="font-medium">
-                    {selectedJob.location}, {selectedJob.country}
-                  </p>
+                  <p className="text-gray-500 mb-1 text-sm">Location</p>
+                  <p className="font-medium text-base">{selectedJob.location}, {selectedJob.country}</p>
                 </div>
                 <div>
-                  <p className="text-gray-500 mb-1">Duration</p>
-                  <p className="font-medium">{selectedJob.duration}</p>
+                  <p className="text-gray-500 mb-1 text-sm">Duration</p>
+                  <p className="font-medium text-base">{selectedJob.duration}</p>
                 </div>
                 <div>
-                  <p className="text-gray-500 mb-1">Salary Range</p>
-                  <p className="font-medium">{selectedJob.salary}</p>
+                  <p className="text-gray-500 mb-1 text-sm">Salary Range</p>
+                  <p className="font-medium text-base">{selectedJob.salary}</p>
                 </div>
               </div>
-
               <div className="mb-6">
-                <p className="text-gray-500 mb-2">Job Description</p>
-                <p>{selectedJob.description}</p>
+                <p className="text-gray-500 mb-2 text-sm">Job Description</p>
+                <p className="text-base">{selectedJob.description}</p>
               </div>
-
               <div>
-                <p className="text-gray-500 mb-2">Requirements</p>
-                <ul className="list-disc pl-5 space-y-1">
+                <p className="text-gray-500 mb-2 text-sm">Requirements</p>
+                <ul className="list-disc pl-5 space-y-1 text-base">
                   {selectedJob.requirements.map((req, index) => (
                     <li key={index}>{req}</li>
                   ))}
                 </ul>
               </div>
             </motion.div>
-          )}
-
-          {/* Application Form */}
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <form onSubmit={handleSubmit}>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                {/* Full Name */}
-                <div>
-                  <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">
-                    Full Name *
-                  </label>
-                  <input
-                    type="text"
-                    id="fullName"
-                    name="fullName"
-                    required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    value={formData.fullName}
-                    onChange={handleInputChange}
-                  />
-                </div>
-
-                {/* Email */}
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                    Email *
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                  />
-                </div>
-
-                {/* Phone */}
-                <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-                    Phone Number *
-                  </label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                  />
-                </div>
-
-                {/* Country */}
-                <div>
-                  <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-1">
-                    Your Country *
-                  </label>
-                  <input
-                    type="text"
-                    id="country"
-                    name="country"
-                    required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    value={formData.country}
-                    onChange={handleInputChange}
-                  />
-                </div>
-
-                {/* Job Interest */}
-                <div className="md:col-span-2">
-                  <label htmlFor="jobInterest" className="block text-sm font-medium text-gray-700 mb-1">
-                    Job Interest *
-                  </label>
-                  <input
-                    type="text"
-                    id="jobInterest"
-                    name="jobInterest"
-                    required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    value={selectedJob ? selectedJob.title : formData.jobInterest}
-                    onChange={handleInputChange}
-                    readOnly={selectedJob !== null}
-                  />
-                </div>
-              </div>
-
-              {/* File Attachments */}
-              <div className="mb-6">
-                <h4 className="font-medium mb-3">Document Uploads (Optional)</h4>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {/* Passport */}
+            <div className="bg-white rounded-xl shadow-md p-8">
+              <form onSubmit={handleSubmit}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                   <div>
-                    <label htmlFor="passportFile" className="block text-sm font-medium text-gray-700 mb-1">
-                      Passport (PDF/JPG)
+                    <label htmlFor="fullName" className="block text-base font-medium text-gray-700 mb-2">
+                      Full Name *
                     </label>
-                    <div className="flex items-center">
-                      <label className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer">
-                        <Upload className="mr-2 h-4 w-4" />
-                        <span>{formData.passportFile ? "File selected" : "Upload"}</span>
-                        <input
-                          type="file"
-                          id="passportFile"
-                          name="passportFile"
-                          className="sr-only"
-                          accept=".pdf,.jpg,.jpeg"
-                          onChange={handleFileChange}
-                        />
-                      </label>
-                    </div>
+                    <input
+                      type="text"
+                      id="fullName"
+                      name="fullName"
+                      required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-md text-base focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      value={formData.fullName}
+                      onChange={handleInputChange}
+                    />
                   </div>
-
-                  {/* CV */}
                   <div>
-                    <label htmlFor="cvFile" className="block text-sm font-medium text-gray-700 mb-1">
-                      CV/Resume (PDF/DOCX)
+                    <label htmlFor="email" className="block text-base font-medium text-gray-700 mb-2">
+                      Email *
                     </label>
-                    <div className="flex items-center">
-                      <label className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer">
-                        <Upload className="mr-2 h-4 w-4" />
-                        <span>{formData.cvFile ? "File selected" : "Upload"}</span>
-                        <input
-                          type="file"
-                          id="cvFile"
-                          name="cvFile"
-                          className="sr-only"
-                          accept=".pdf,.docx"
-                          onChange={handleFileChange}
-                        />
-                      </label>
-                    </div>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-md text-base focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                    />
                   </div>
-
-                  {/* Certificates */}
                   <div>
-                    <label htmlFor="certificatesFile" className="block text-sm font-medium text-gray-700 mb-1">
-                      Certificates (PDF/JPG)
+                    <label htmlFor="phone" className="block text-base font-medium text-gray-700 mb-2">
+                      Phone Number *
                     </label>
-                    <div className="flex items-center">
-                      <label className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer">
-                        <Upload className="mr-2 h-4 w-4" />
-                        <span>{formData.certificatesFile ? "File selected" : "Upload"}</span>
-                        <input
-                          type="file"
-                          id="certificatesFile"
-                          name="certificatesFile"
-                          className="sr-only"
-                          accept=".pdf,.jpg,.jpeg"
-                          onChange={handleFileChange}
-                        />
+                    <input
+                      type="tel"
+                      id="phone"
+                      name="phone"
+                      required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-md text-base focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="country" className="block text-base font-medium text-gray-700 mb-2">
+                      Your Country *
+                    </label>
+                    <input
+                      type="text"
+                      id="country"
+                      name="country"
+                      required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-md text-base focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      value={formData.country}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label htmlFor="jobInterest" className="block text-base font-medium text-gray-700 mb-2">
+                      Job Interest *
+                    </label>
+                    <input
+                      type="text"
+                      id="jobInterest"
+                      name="jobInterest"
+                      required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-md text-base focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      value={formData.jobInterest}
+                      readOnly
+                    />
+                  </div>
+                </div>
+                <div className="mb-8">
+                  <h4 className="text-lg font-medium mb-4">Document Uploads (Optional)</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div>
+                      <label htmlFor="passportFile" className="block text-base font-medium text-gray-700 mb-2">
+                        Passport (PDF/JPG)
                       </label>
+                      <div className="flex items-center">
+                        <label className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer">
+                          <Upload className="mr-2 h-5 w-5" />
+                          <span>{formData.passportFile ? formData.passportFile.name : "Upload"}</span>
+                          <input
+                            type="file"
+                            id="passportFile"
+                            name="passportFile"
+                            className="sr-only"
+                            accept=".pdf,.jpg,.jpeg"
+                            onChange={handleFileChange}
+                          />
+                        </label>
+                      </div>
+                    </div>
+                    <div>
+                      <label htmlFor="cvFile" className="block text-base font-medium text-gray-700 mb-2">
+                        CV/Resume (PDF/DOCX)
+                      </label>
+                      <div className="flex items-center">
+                        <label className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer">
+                          <Upload className="mr-2 h-5 w-5" />
+                          <span>{formData.cvFile ? formData.cvFile.name : "Upload"}</span>
+                          <input
+                            type="file"
+                            id="cvFile"
+                            name="cvFile"
+                            className="sr-only"
+                            accept=".pdf,.docx"
+                            onChange={handleFileChange}
+                          />
+                        </label>
+                      </div>
+                    </div>
+                    <div>
+                      <label htmlFor="certificatesFile" className="block text-base font-medium text-gray-700 mb-2">
+                        Certificates (PDF/JPG)
+                      </label>
+                      <div className="flex items-center">
+                        <label className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer">
+                          <Upload className="mr-2 h-5 w-5" />
+                          <span>{formData.certificatesFile ? formData.certificatesFile.name : "Upload"}</span>
+                          <input
+                            type="file"
+                            id="certificatesFile"
+                            name="certificatesFile"
+                            className="sr-only"
+                            accept=".pdf,.jpg,.jpeg"
+                            onChange={handleFileChange}
+                          />
+                        </label>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-
-              <div className="text-center">
-                <button type="submit" className="btn bg-green-600 text-white hover:bg-green-700 px-8">
-                  Submit Application
-                </button>
-              </div>
-            </form>
+                <div className="text-center">
+                  <button type="submit" className="btn bg-green-600 text-white hover:bg-green-700 px-8 py-3 text-base">
+                    Submit Application
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </div>
   )
 }

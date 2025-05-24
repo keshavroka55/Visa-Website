@@ -64,9 +64,9 @@
     @apply bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow;
   }
 
-  .container-custom {
-    @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full; /* Increased padding for better spacing */
-  }
+.container-custom {
+  @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full; /* Increased padding for better spacing */
+}
 
   .section {
     @apply py-8 md:py-12 lg:py-16; /* Increased vertical padding for sections */
