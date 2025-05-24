@@ -270,19 +270,22 @@ const JobApply = () => {
 
   // Handle job card click
   const handleJobSelect = (job: Job) => {
-    setSelectedJob(job)
-    window.scrollTo({ top: document.getElementById("application-form")?.offsetTop - 100, behavior: "smooth" })
+  setSelectedJob(job)
+  const formElement = document.getElementById("application-form")
+  if (formElement) {
+    window.scrollTo({ top: formElement.offsetTop - 100, behavior: "smooth" })
   }
+}
 
-  // Handle alert click
-  const handleAlertClick = () => {
-    // Find the most recent job
-    const sortedJobs = [...jobs].sort((a, b) => new Date(b.postedDate).getTime() - new Date(a.postedDate).getTime())
-
-    const recentJob = sortedJobs[0]
-    setSelectedJob(recentJob)
-    window.scrollTo({ top: document.getElementById("application-form")?.offsetTop - 100, behavior: "smooth" })
+const handleAlertClick = () => {
+  const sortedJobs = [...jobs].sort((a, b) => new Date(b.postedDate).getTime() - new Date(a.postedDate).getTime())
+  const recentJob = sortedJobs[0]
+  setSelectedJob(recentJob)
+  const formElement = document.getElementById("application-form")
+  if (formElement) {
+    window.scrollTo({ top: formElement.offsetTop - 100, behavior: "smooth" })
   }
+}
 
   // Handle form input change
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -351,18 +354,18 @@ const JobApply = () => {
       {/* Alert for Recent Jobs */}
       {showAlert && (
         <motion.div
-          className="bg-yellow-50 border-l-4 border-yellow-400 p-4 my-6 mx-4 md:mx-auto md:max-w-7xl"
+          className="bg-yellow-50 border-l-4 border-red-400 p-4 my-6 mx-4 md:mx-auto md:max-w-7xl"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
           <div className="flex items-center cursor-pointer" onClick={handleAlertClick}>
             <div className="flex-shrink-0">
-              <AlertTriangle className="h-5 w-5 text-yellow-400" />
+              <AlertTriangle className="h-5 w-5 text-red-400" />
             </div>
             <div className="ml-3">
-              <p className="text-sm text-yellow-700">
-                <span className="font-medium">New job opportunities available!</span> We have recently added new
+              <p className="text-2xl text-red-700">
+                <span className="font-medium">New job opportunities available!</span> The recent/current job oppurtinities are
                 positions. Click here to view.
               </p>
             </div>
