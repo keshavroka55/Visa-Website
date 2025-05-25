@@ -88,15 +88,15 @@ const Contact = () => {
                 <div className="flex items-start">
                   <Facebook className="h-6 w-6 text-blue-700 mr-4 mt-1" />
                   <div>
-                    <h3 className="font-bold text-lg mb-1">Social Media</h3>
+                    <h3 className="font-bold text-lg mb-1">Please Fill this Google form!</h3>
                     <p className="text-gray-600">
                       <a
-                        href="https://facebook.com/"
+                        href="https://forms.gle/z3FHQtg9CouPEHV7A"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="hover:text-blue-700 transition-colors"
                       >
-                        facebook.com/VisaCenter
+                        Click Here to Fill the Form
                       </a>
                     </p>
                   </div>

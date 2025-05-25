@@ -81,7 +81,7 @@ const Footer = () => {
             <ul className="space-y-2">
               <li className="flex items-start">
                 <MapPin size={14} className="mr-2 mt-1 text-blue-300" />
-                <span className="text-gray-300 text-sm">123 Visa Street, Global City, 10001</span>
+                <span className="text-gray-300 text-sm"> Kupondole Lalitpur, Nepal</span>
               </li>
               <li className="flex items-center">
                 <Phone size={14} className="mr-2 text-blue-300" />
@@ -103,7 +103,7 @@ const Footer = () => {
                   rel="noopener noreferrer"
                   className="text-gray-300 hover:text-blue-300 text-sm"
                 >
-                  VisaCenter
+                  Best Demand
                 </a>
               </li>
             </ul>
