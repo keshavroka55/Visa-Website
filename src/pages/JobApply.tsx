@@ -286,9 +286,9 @@ const JobApply = () => {
               <AlertTriangle className="h-6 w-6 text-red-400" />
             </div>
             <div className="ml-3">
-              <p className="text-lg md:text-xl text-red-700">
-                <span className="font-medium">New job opportunities available!</span> Check out our latest openings for
-                exciting roles. Click to view.
+              <p className="text-3xl text-red-700">
+                <span className="font-medium">New job opportunities available!</span> We have recently added new
+                positions. Click here to view.
               </p>
             </div>
           </div>

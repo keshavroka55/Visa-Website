@@ -13,23 +13,25 @@ const Contact = () => {
   return (
     <div>
       {/* Hero Section */}
-      <section className="bg-blue-700 text-white py-16">
-        <div className="container-custom">
+      <section className="bg-blue-700 text-white py-8 md:py-10">
+        <div className="container-custom viewport-contained">
           <motion.div
-            className="text-center max-w-3xl mx-auto"
+            className="text-center max-w-xl mx-auto"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">Contact Us</h1>
-            <p className="text-xl text-blue-100">Have questions about our visa services? Get in touch with our team.</p>
+            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold mb-3">Contact Us</h1>
+            <p className="text-sm md:text-base text-blue-100">
+              Have questions about our visa services? Get in touch with our team.
+            </p>
           </motion.div>
         </div>
       </section>
 
       {/* Contact Information */}
-      <section className="py-16 bg-white">
-        <div className="container-custom">
+      <section className="py-6 md:py-10 bg-white">
+        <div className="container-custom viewport-contained">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}>
               <h2 className="text-3xl font-bold mb-6">Get In Touch</h2>
@@ -100,107 +102,10 @@ const Contact = () => {
                   </div>
                 </div>
               </div>
-
-              <div className="mt-8">
-                <h3 className="font-bold text-lg mb-3">Office Hours</h3>
-                <ul className="text-gray-600 space-y-1">
-                  <li className="flex justify-between">
-                    <span>Monday - Friday:</span>
-                    <span>9:00 AM - 6:00 PM</span>
-                  </li>
-                  <li className="flex justify-between">
-                    <span>Saturday:</span>
-                    <span>10:00 AM - 2:00 PM</span>
-                  </li>
-                  <li className="flex justify-between">
-                    <span>Sunday:</span>
-                    <span>Closed</span>
-                  </li>
-                </ul>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="bg-gray-50 rounded-xl shadow-md p-8"
-            >
-              <h3 className="text-2xl font-bold mb-6">Send Us a Message</h3>
-              <form>
-                <div className="mb-4">
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                    Your Name *
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                    Email Address *
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-                    Phone Number
-                  </label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1">
-                    Subject *
-                  </label>
-                  <input
-                    type="text"
-                    id="subject"
-                    name="subject"
-                    required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-
-                <div className="mb-6">
-                  <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
-                    Message *
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    rows={5}
-                    required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  ></textarea>
-                </div>
-
-                <button type="submit" className="w-full btn btn-primary">
-                  Send Message
-                </button>
-              </form>
             </motion.div>
           </div>
         </div>
       </section>
-
       {/* Map */}
       <section className="py-16 bg-gray-50">
         <div className="container-custom">
@@ -210,21 +115,22 @@ const Contact = () => {
               Visit us at our office to discuss your visa and job opportunities in person.
             </p>
           </motion.div>
-
+        
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8 }}
-            className="rounded-xl overflow-hidden shadow-md"
+            className="rounded-xl overflow-hidden shadow-md h-[400px] w-full flex items-center justify-center bg-white"
           >
             <img
-              src="/placeholder.svg?height=400&width=1200"
+              src="/gogolemap.png"
               alt="Office location map"
-              className="w-full h-[400px] object-cover"
+              className="h-full object-contain"
             />
           </motion.div>
         </div>
       </section>
+
 
       {/* FAQ */}
       <section className="py-16 bg-white">
@@ -276,7 +182,7 @@ const Contact = () => {
 
           <div className="text-center mt-8">
             <p className="text-gray-600 mb-4">Don't see your question here? Get in touch with us directly.</p>
-            <a href="tel:+1234567890" className="btn btn-primary">
+            <a href="9748313642" className="btn btn-primary">
               Call Us Now
             </a>
           </div>

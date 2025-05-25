@@ -1,31 +1,39 @@
 "use client"
 
-import type React from "react"
-
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { Lock, User, Eye, EyeOff, AlertCircle } from "lucide-react"
-import { useAuth } from "../../context/AuthContext"
-import { useNavigate } from "react-router-dom"
+import { createClient } from "@supabase/supabase-js"
+import { useRouter } from "next/navigation"
+import { Lock, Mail, Eye, EyeOff, AlertCircle } from "lucide-react"
+
+// Initialize Supabase client
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+if (!supabaseUrl || !supabaseKey) {
+  throw new Error("Missing Supabase environment variables")
+}
+const supabase = createClient(supabaseUrl, supabaseKey)
 
 const AdminLogin = () => {
   const [formData, setFormData] = useState({
-    username: "",
+    email: "",
     password: "",
   })
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
 
-  const { login, isAuthenticated } = useAuth()
-  const navigate = useNavigate()
-
-  // Redirect if already authenticated
+  // Check if already authenticated
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/admin/dashboard")
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user && user.app_metadata.role === "admin") {
+        router.push("/admin/dashboard")
+      }
     }
-  }, [isAuthenticated, navigate])
+    checkAuth()
+  }, [router])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -33,7 +41,6 @@ const AdminLogin = () => {
       ...prev,
       [name]: value,
     }))
-    // Clear error when user starts typing
     if (error) setError("")
   }
 
@@ -43,15 +50,23 @@ const AdminLogin = () => {
     setError("")
 
     try {
-      const success = await login(formData.username, formData.password)
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password,
+      })
 
-      if (success) {
-        navigate("/admin/dashboard")
-      } else {
-        setError("Invalid username or password")
+      if (authError) {
+        throw new Error(authError.message)
       }
-    } catch (err) {
-      setError("An error occurred during login")
+
+      if (data.user?.app_metadata.role !== "admin") {
+        await supabase.auth.signOut()
+        throw new Error("Access denied: Not an admin")
+      }
+
+      router.push("/admin/dashboard")
+    } catch (err: any) {
+      setError(err.message || "An error occurred during login")
     } finally {
       setIsLoading(false)
     }
@@ -95,23 +110,23 @@ const AdminLogin = () => {
               </motion.div>
             )}
 
-            {/* Username Field */}
+            {/* Email Field */}
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
-                Username
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                Email
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <User className="h-5 w-5 text-gray-400" />
+                  <Mail className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
-                  id="username"
-                  name="username"
-                  type="text"
+                  id="email"
+                  name="email"
+                  type="email"
                   required
                   className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Enter your username"
-                  value={formData.username}
+                  placeholder="Enter your email"
+                  value={formData.email}
                   onChange={handleInputChange}
                 />
               </div>
@@ -172,7 +187,7 @@ const AdminLogin = () => {
             <p className="text-xs text-gray-600 text-center mb-2">Demo Credentials:</p>
             <div className="text-xs text-gray-700 space-y-1">
               <p>
-                <strong>Username:</strong> admin
+                <strong>Email:</strong> admin@visacenter.com
               </p>
               <p>
                 <strong>Password:</strong> visacenter2024
